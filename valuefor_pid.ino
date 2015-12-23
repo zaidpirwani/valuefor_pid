@@ -7,6 +7,7 @@ int sensors[] = {0,0,0};
 int sensPins[]= {A6,A2,A1};
 int bgnd[] = {0,0,0};
 int line[]  = {1023,1023,1023};
+int diff[]  = {0,0,0};
 float value;
 int follow=0;
 
@@ -121,9 +122,13 @@ void getSensor() {
 }
 
 void calibrate(){
+  int a, b;
+  for(a=0; a<3; a++){
+      bgnd[a] = 0;
+      line[a] = 1023;
+    }
   digitalWrite(lights, LOW);
   delay(1000);
-  int a, b;
   forward();
   unsigned long prevTime = millis();
   do{
@@ -139,7 +144,7 @@ void calibrate(){
         Serial.print(String(tmp[a]) + " , ");
       }
     Serial.println("");
-  }while(millis()<(prevTime+250));
+  }while(millis()<(prevTime+700));
   halt();
   Serial.print("LINE: ");
   for(a=0; a<3; a++){
@@ -164,7 +169,7 @@ void setMotors(int value){
   if(value>0)
     spdP = map(value, 0, 100, 50, 255);
   if(value<0)
-    spdL = map(value, -100, 0, 50, 255);
+    spdL = map(value*-1, 0, 100, 50, 255);
   if(value>-10 && value<10)
     forward();
   else{
